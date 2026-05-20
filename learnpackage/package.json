@@ -1,0 +1,17 @@
+{
+	"name": "learnpackage",
+	"version": "1.0.0",
+	"description": "\"This is the learnpackagenpm",
+	"main": "index.js",
+	"scripts": {
+		"node": "node index.js"
+	},
+	"keywords": [
+		"'nodejs'"
+	],
+	"author": "Ratnesh Kumar",
+	"license": "ISC",
+	"dependencies": {
+		"bcryptjs": "^3.0.3"
+	}
+}

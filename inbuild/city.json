@@ -1,0 +1,42 @@
+[
+  {
+    "_id": "1",
+    "location_id": "LOC001",
+    "location_name": "Patna",
+    "state_id": "BR01",
+    "state": "Bihar",
+    "country_name": "India"
+  },
+  {
+    "_id": "2",
+    "location_id": "LOC002",
+    "location_name": "Mumbai",
+    "state_id": "MH01",
+    "state": "Maharashtra",
+    "country_name": "India"
+  },
+  {
+    "_id": "3",
+    "location_id": "LOC003",
+    "location_name": "Bengaluru",
+    "state_id": "KA01",
+    "state": "Karnataka",
+    "country_name": "India"
+  },
+  {
+    "_id": "4",
+    "location_id": "LOC004",
+    "location_name": "Kolkata",
+    "state_id": "WB01",
+    "state": "West Bengal",
+    "country_name": "India"
+  },
+  {
+    "_id": "5",
+    "location_id": "LOC005",
+    "location_name": "Chennai",
+    "state_id": "TN01",
+    "state": "Tamil Nadu",
+    "country_name": "India"
+  }
+]

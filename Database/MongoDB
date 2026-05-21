@@ -1,0 +1,817 @@
+# MongoDB - Complete Beginner Guide
+
+# Introduction
+
+MongoDB is a popular **NoSQL** database used in modern web applications.  
+Instead of storing data in rows and tables like MySQL, MongoDB stores data in flexible JSON-like documents.
+
+MongoDB is good for both structured and unstructured data.
+
+It supports nested documents, arrays, and dynamic schemas, making it ideal for handling complex data.
+
+SQL :
+
+| RollNo | Hindi | English |
+| ------ | ----- | ------- |
+| 1      | 80    |         |
+| 2      |       | 90      |
+| 3      | 69    |         |
+
+Here space is wasted for empty values. that's way MongoDB is better for handling such data.
+
+mongodb:
+
+```json
+[
+	{
+		"RollNo": 1,
+		"Hindi": 80
+	},
+	{
+		"RollNo": 2,
+		"English": 90
+	},
+	{
+		"RollNo": 3,
+		"Hindi": 69
+	}
+]
+```
+
+## SQL vs NoSQL
+|    SQL        | NoSQL                |
+| ------------- | -------------------- |
+| database      | database             |
+| table         | collection           |
+| row           | document             |
+| column        | field                |
+| select        | find                 |
+| insert        | insert               |
+| delete        | remove               |
+| update        | update               |
+
+
+> Default MongoDB port is `27017`. You can change it in the config file.
+
+This guide covers:
+- MongoDB service commands
+- Database commands
+- CRUD operations
+- Aggregation
+- Backup and restore
+- Linux administration commands
+- Configuration and logs
+
+---
+
+# 1. MongoDB Service Commands
+
+These commands are used to manage the MongoDB server process on Linux systems using `systemd`.
+
+---
+
+## Start MongoDB Service
+
+Starts the MongoDB database server.
+
+```bash
+sudo systemctl start mongod
+```
+
+Use this command when MongoDB is installed but not currently running.
+
+---
+
+## Stop MongoDB Service
+
+Stops the running MongoDB server safely.
+
+```bash
+sudo systemctl stop mongod
+```
+
+Useful before system maintenance or configuration changes.
+
+---
+
+## Restart MongoDB Service
+
+Restarts the MongoDB server.
+
+```bash
+sudo systemctl restart mongod
+```
+
+Usually required after editing MongoDB configuration files.
+
+---
+
+## Check MongoDB Status
+
+Shows whether MongoDB is active, stopped, or failed.
+
+```bash
+sudo systemctl status mongod
+```
+
+Example output may include:
+
+- Active state
+- Process ID
+- Memory usage
+- Startup logs
+
+---
+
+## Enable MongoDB on Boot
+
+Automatically starts MongoDB whenever Linux boots.
+
+```bash
+sudo systemctl enable mongod
+```
+
+---
+
+# 2. MongoDB Shell Commands
+
+MongoDB shell allows you to interact directly with the database.
+
+---
+
+## Open Mongo Shell
+
+Modern shell:
+
+```bash
+mongosh
+```
+
+---
+
+# 3. Database Commands
+
+Databases contain collections.
+
+Think of:
+
+- Database = Folder
+- Collection = File
+- Document = Record
+
+---
+
+## Show All Databases
+
+```js
+show dbs
+```
+
+Lists all available databases.
+
+---
+
+## Create or Switch Database(go inside database)
+
+```js
+use mydb
+```
+
+If `mydb` does not exist,
+it will be created when you insert data.
+without collections database will not be created.
+
+---
+
+## Show Current Database
+
+```js
+db;
+```
+
+Displays the currently selected database.
+
+---
+
+## Delete Current Database
+
+```js
+db.dropDatabase();
+```
+
+Deletes the entire database permanently.
+
+Be careful because this operation cannot be undone.
+
+---
+
+# 4. Collection Commands
+
+Collections store documents.
+
+Collections are similar to SQL tables.
+
+---
+
+## Show Collections
+
+```js
+show collections
+```
+
+Displays all collections in the current database.
+
+---
+
+## Create Collection
+
+```js
+db.createCollection('users');
+```
+
+Creates a collection named `users`.
+
+```js
+db.users.insert({"name":"Aron", "age" : 21});
+```
+Without data collection will not be created.
+
+---
+
+## Delete Collection
+
+```js
+db.users.drop();
+```
+
+Deletes the `users` collection completely.
+
+---
+
+# 5. Insert Commands
+
+Insert operations add data into collections.
+
+---
+
+## Insert One Document
+
+```js
+db.users.insertOne({
+	name: 'Rahul',
+	age: 22,
+});
+```
+OR
+```js
+db.users.insert({
+	name: 'Rahul',
+	age: 22,
+});
+```
+
+Explanation:
+
+- `users` = collection name
+- Data is stored as a document
+- Each document has a unique `_id` field generated automatically. it is same in MongoDB as primary key in SQL.
+
+12 bytes :  
+- 5 bytes = random value
+- 3 bytes = series
+- 4 bytes = timestamp
+
+---
+
+## Insert Multiple Documents
+
+```js
+db.users.insertMany([{ name: 'A' }, { name: 'B' }]);
+```
+OR
+```js
+db.users.insert([{ name: 'A' }, { name: 'B' },{ name: 'C' }]);
+```
+
+Useful for bulk data insertion.
+
+---
+
+# 6. Read / Find Commands
+
+Read commands retrieve data from MongoDB.
+
+---
+
+## Find All Documents
+
+```js
+db.users.find();
+```
+
+Returns all documents inside the collection.
+
+---
+
+## Pretty Format Output
+
+```js
+db.users.find().pretty();
+```
+
+Formats JSON output in readable style.
+
+---
+
+## Find One Document
+
+```js
+db.users.findOne();
+```
+
+Returns the first matching document.
+
+---
+
+## Find with Condition
+
+```js
+db.users.find({ age: 22 });
+```
+
+Returns all users where age equals 22.
+
+```js
+db.users.find({ "age": 22, "address": "Delhi" });
+```
+Returns all users where age equals 22 and address equals "Delhi".
+
+---
+
+# 7. MongoDB Query Operators
+
+MongoDB provides operators for advanced filtering.
+
+---
+
+## Greater Than Operator
+
+```js
+db.users.find({ age: { $gt: 20 } });
+```
+
+Returns users older than 20.
+
+---
+
+## Common Operators
+
+| Operator | Meaning               |
+| -------- | --------------------- |
+| `$gt`    | Greater than          |
+| `$lt`    | Less than             |
+| `$gte`   | Greater than or equal |
+| `$lte`   | Less than or equal    |
+| `$ne`    | Not equal             |
+| `$in`    | Match multiple values |
+| `$or`    | OR condition          |
+
+---
+
+## Example Using `$in`
+
+```js
+db.users.find({
+	age: { $in: [20, 25, 30] },
+});
+```
+
+---
+
+# 8. Update Commands
+
+Update commands modify existing documents.
+
+---
+
+## Update One Document
+
+```js
+db.users.updateOne({ name: 'Rahul' }, { $set: { age: 25 } });
+```
+
+Explanation:
+
+- Finds Rahul
+- Changes age to 25
+
+---
+
+## Update Multiple Documents
+
+```js
+db.users.updateMany({}, { $set: { status: 'active' } });
+```
+
+Adds `status: active` to all documents.
+
+---
+
+## Replace Entire Document
+
+```js
+db.users.replaceOne({ name: 'Rahul' }, { name: 'Rahul', age: 30 });
+```
+
+Completely replaces the old document.
+
+---
+
+# 9. Delete Commands
+
+Delete operations remove documents.
+
+---
+
+## Delete One Document
+
+```js
+db.users.deleteOne({ name: 'Rahul' });
+```
+
+Deletes the first matching document.
+
+---
+
+## Delete Multiple Documents
+
+```js
+db.users.deleteMany({ status: 'inactive' });
+```
+
+Deletes all inactive users.
+
+---
+
+# 10. Sorting, Limiting, and Pagination
+
+Useful for APIs and large datasets.
+
+---
+
+## Sort Documents
+
+Ascending order:
+
+```js
+db.users.find().sort({ age: 1 });
+```
+
+Descending order:
+
+```js
+db.users.find().sort({ age: -1 });
+```
+
+---
+
+## Limit Results
+
+```js
+db.users.find().limit(5);
+```
+
+Returns only 5 documents.
+
+---
+
+## Skip Documents
+
+```js
+db.users.find().skip(5);
+```
+
+Skips first 5 records.
+
+Commonly used in pagination systems.
+
+---
+
+# 11. Count Commands
+
+---
+
+## Count Documents
+
+```js
+db.users.countDocuments();
+```
+
+Returns exact number of documents.
+
+---
+
+## Estimated Count
+
+```js
+db.users.estimatedDocumentCount();
+```
+
+Faster but less accurate for very large collections.
+
+---
+
+# 12. Index Commands
+
+Indexes improve query performance.
+
+Without indexes, MongoDB scans every document.
+
+---
+
+## Create Index
+
+```js
+db.users.createIndex({ email: 1 });
+```
+
+Creates ascending index on `email`.
+
+---
+
+## Show Indexes
+
+```js
+db.users.getIndexes();
+```
+
+Displays all indexes.
+
+---
+
+## Remove Index
+
+```js
+db.users.dropIndex({ email: 1 });
+```
+
+Deletes the index.
+
+---
+
+# 13. Aggregation Pipeline
+
+Aggregation processes and transforms data.
+
+Very important for backend development and interviews.
+
+---
+
+## Basic Aggregation Example
+
+```js
+db.users.aggregate([
+	{ $match: { age: { $gt: 20 } } },
+	{ $group: { _id: '$age', total: { $sum: 1 } } },
+]);
+```
+
+Explanation:
+
+1. Filter users older than 20
+2. Group by age
+3. Count users in each group
+
+---
+
+## Important Aggregation Stages
+
+| Stage      | Purpose          |
+| ---------- | ---------------- |
+| `$match`   | Filter documents |
+| `$group`   | Group data       |
+| `$sort`    | Sort output      |
+| `$project` | Select fields    |
+| `$limit`   | Restrict results |
+
+---
+
+# 14. User Authentication Commands
+
+Used for security and access control.
+
+---
+
+## Create Database User
+
+```js
+db.createUser({
+	user: 'admin',
+	pwd: 'password',
+	roles: ['readWrite'],
+});
+```
+
+Creates user with read/write access.
+
+---
+
+## Show Users
+
+```js
+show users
+```
+
+Displays all users in current database.
+
+---
+
+# 15. Backup and Restore Commands
+
+Critical for production systems.
+
+---
+
+## Backup Database
+
+```bash
+mongodump --db mydb
+```
+
+Creates backup files.
+
+---
+
+## Restore Database
+
+```bash
+mongorestore dump/
+```
+
+Restores backup data.
+
+---
+
+## Export Collection to JSON
+
+```bash
+mongoexport --db=mydb --collection=users --out=users.json
+```
+
+Exports collection into JSON file.
+
+---
+
+## Import JSON File
+
+```bash
+mongoimport --db=mydb --collection=users --file=users.json
+```
+
+Imports JSON data into MongoDB.
+
+---
+
+# 16. MongoDB Logs
+
+Logs help diagnose problems.
+
+---
+
+## View MongoDB Logs
+
+```bash
+sudo journalctl -u mongod
+```
+
+Displays service logs.
+
+---
+
+## Live Log Monitoring
+
+```bash
+sudo tail -f /var/log/mongodb/mongod.log
+```
+
+Useful for debugging real-time issues.
+
+---
+
+# 17. MongoDB Configuration
+
+MongoDB settings are stored in a config file.
+
+---
+
+## Configuration File Location
+
+```bash
+/etc/mongod.conf
+```
+
+---
+
+## Edit Configuration File
+
+```bash
+sudo nano /etc/mongod.conf
+```
+
+After editing config:
+
+```bash
+sudo systemctl restart mongod
+```
+
+---
+
+# 18. MongoDB Port Information
+
+Default MongoDB port:
+
+```bash
+27017
+```
+
+---
+
+## Check Active MongoDB Port
+
+```bash
+sudo ss -tulnp | grep 27017
+```
+
+Shows whether MongoDB is listening properly.
+
+---
+
+# 19. Useful Linux Commands for MongoDB
+
+---
+
+## Check MongoDB Process
+
+```bash
+ps aux | grep mongod
+```
+
+Shows running MongoDB process.
+
+---
+
+## Kill MongoDB Process
+
+```bash
+sudo kill -9 PID
+```
+
+Forcefully stops process.
+
+Replace `PID` with actual process ID.
+
+---
+
+## Check MongoDB Disk Usage
+
+```bash
+du -sh /var/lib/mongodb
+```
+
+Displays database storage size.
+
+---
+
+# 20. Important MongoDB File Locations
+
+| Purpose     | Path               |
+| ----------- | ------------------ |
+| Data files  | `/var/lib/mongodb` |
+| Config file | `/etc/mongod.conf` |
+| Log files   | `/var/log/mongodb` |
+
+---
+
+# 21. MongoDB Local Setup
+
+1. Install MongoDB on your machine (follow official docs).
+2. Start MongoDB service.
+3. Open Mongo shell using `mongosh`.
+4. Create a database and collection.
+5. Insert sample data and practice queries.        
+
+
+
+
+
+# 22. Official Documentation
+
+## MongoDB Manual
+
+https://www.mongodb.com/docs/manual/
+
+---
+
+## MongoDB Shell Documentation
+
+https://www.mongodb.com/docs/mongodb-shell/

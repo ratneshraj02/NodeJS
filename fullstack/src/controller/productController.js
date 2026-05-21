@@ -26,8 +26,8 @@ function router(menu) {
 			console.log(result);
 
 			res.render('product', {
-				title: 'Category Page',
-
+				title: 'Product Page',
+				product: result,
 				menu,
 			});
 		} catch (err) {
@@ -37,8 +37,31 @@ function router(menu) {
 		}
 	});
 
+	productRouter.route('/category/:id').get(async (req, res) => {
+		let { id } = req.params;
+		// it always in form the string
+
+		await client.connect();
+		console.log('Connected successfully to server');
+
+		const db = client.db(dbName);
+
+		const collection = db.collection('product');
+
+		const result = await collection
+			.find({ category_id: `CAT00${Number(id)}` })
+			.toArray();
+
+		console.log(result);
+		res.render('product', {
+			title: 'Product Page',
+			product: result,
+			menu,
+		});
+	});
+
 	productRouter.route('/details').get((req, res) => {
-		res.send('Category Details');
+		res.send('Product Details');
 	});
 
 	return productRouter;

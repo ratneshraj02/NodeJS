@@ -12,7 +12,7 @@ const port = process.env.PORT || 8000;
 
 let menu = [
     { name: "Category", link: '/category' },
-    {name: "Product", link : '/product'}
+    {name: "Product", link : '/products'}
 ];
 
 const categoryRouter = require('./src/controller/categoryController.js')(menu);
@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/category', categoryRouter);
-app.use('/product', productRouter);
+app.use('/products', productRouter);
 
 
 app.listen(port, () => {

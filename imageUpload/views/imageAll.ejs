@@ -1,0 +1,12 @@
+<h1>All Images</h1>
+
+<% images.forEach((image) => { %>
+	<div>
+		<h3><%= image.imageTitle %></h3>
+
+		<img 
+			src="/images/<%= image.imagePath %>" 
+			width="300"
+		/>
+	</div>
+<% }) %>

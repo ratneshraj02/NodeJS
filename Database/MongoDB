@@ -39,21 +39,22 @@ mongodb:
 ```
 
 ## SQL vs NoSQL
-|    SQL        | NoSQL                |
-| ------------- | -------------------- |
-| database      | database             |
-| table         | collection           |
-| row           | document             |
-| column        | field                |
-| select        | find                 |
-| insert        | insert               |
-| delete        | remove               |
-| update        | update               |
 
+| SQL      | NoSQL      |
+| -------- | ---------- |
+| database | database   |
+| table    | collection |
+| row      | document   |
+| column   | field      |
+| select   | find       |
+| insert   | insert     |
+| delete   | remove     |
+| update   | update     |
 
 > Default MongoDB port is `27017`. You can change it in the config file.
 
 This guide covers:
+
 - MongoDB service commands
 - Database commands
 - CRUD operations
@@ -232,8 +233,9 @@ db.createCollection('users');
 Creates a collection named `users`.
 
 ```js
-db.users.insert({"name":"Aron", "age" : 21});
+db.users.insert({ name: 'Aron', age: 21 });
 ```
+
 Without data collection will not be created.
 
 ---
@@ -262,7 +264,9 @@ db.users.insertOne({
 	age: 22,
 });
 ```
+
 OR
+
 ```js
 db.users.insert({
 	name: 'Rahul',
@@ -276,7 +280,8 @@ Explanation:
 - Data is stored as a document
 - Each document has a unique `_id` field generated automatically. it is same in MongoDB as primary key in SQL.
 
-12 bytes :  
+12 bytes :
+
 - 5 bytes = random value
 - 3 bytes = series
 - 4 bytes = timestamp
@@ -288,9 +293,11 @@ Explanation:
 ```js
 db.users.insertMany([{ name: 'A' }, { name: 'B' }]);
 ```
+
 OR
+
 ```js
-db.users.insert([{ name: 'A' }, { name: 'B' },{ name: 'C' }]);
+db.users.insert([{ name: 'A' }, { name: 'B' }, { name: 'C' }]);
 ```
 
 Useful for bulk data insertion.
@@ -342,8 +349,9 @@ db.users.find({ age: 22 });
 Returns all users where age equals 22.
 
 ```js
-db.users.find({ "age": 22, "address": "Delhi" });
+db.users.find({ age: 22, address: 'Delhi' });
 ```
+
 Returns all users where age equals 22 and address equals "Delhi".
 
 ---
@@ -354,13 +362,45 @@ MongoDB provides operators for advanced filtering.
 
 ---
 
+## Less Than Operator
+
+```js
+db.restaurants.find({cost: {$lt: 500}},{
+	restaurant_name : 1,
+	cost : 1,
+	_id : 0
+}).pretty()
+```
+
+Returns restaurants with cost less than 500.
+
+---
+
 ## Greater Than Operator
 
 ```js
-db.users.find({ age: { $gt: 20 } });
+db.restaurants.find({cost: {$gt: 1500}},{
+	restaurant_name : 1,
+	cost : 1,
+	_id : 0
+}).pretty()
 ```
 
-Returns users older than 20.
+Returns restaurants with cost greater than 1500.
+
+---
+
+## Find the
+
+```js
+db.restaurants.find({cost: {$gt: 500}, {lt: 1500}},{
+	restaurant_name : 1,
+	cost : 1,
+	_id : 0
+}).pretty()
+```
+
+Returns restaurants with cost greater than 500 and less than 1500.
 
 ---
 
@@ -387,6 +427,66 @@ db.users.find({
 ```
 
 ---
+
+## Example Using `$or`
+
+```js
+db.users.find({
+	$or: [{ age: 20 }, { age: 25 }],
+});
+```				
+---
+
+## Example Using `$ne`
+
+```js
+db.users.find({
+	age: { $ne: 22 },
+});
+```		
+
+### Example Using `$and`
+
+```js
+db.users.find({
+	$and: [{ age: { $gt: 20 } }, { age: { $lt: 30 } }],
+});
+```			
+---
+## find nested document
+
+```js
+	db.restaurants.find({mealTypes.mealtype_id : 3},{
+		restaurant_name : 1,
+		mealTypes : 1,
+		_id : 0
+	}).pretty()
+```
+find the mealtype_id:3 and give restaurant_name and mealTypes
+
+---
+
+## find nested document with condition
+
+```js
+	db.restaurants.find({"mealTypes.mealtype_id" : 3},{
+		restaurant_name : 1,
+		mealTypes : {$elemMatch : {mealtype_id : 3}},
+		_id : 0
+	}).pretty()
+```
+---
+
+## find nested document with multiple values
+
+``` js
+	db.restaurants.find({
+		"mealTypes.mealtype_id" : {$in : [1, 4, 6]}
+	},{
+		restaurant_name : 1,
+		mealTypes : 1,
+		_id : 0
+	}).pretty()
 
 # 8. Update Commands
 
@@ -417,6 +517,24 @@ Adds `status: active` to all documents.
 
 ---
 
+Or
+
+```js
+db.users.update({"city" : "Delhi"}, { $set: { Temp: 35 },{ multi:true} });
+```
+
+find the city :Delhi and add Temp:35 in all the records
+
+---
+
+```js
+db.users.update({ _id: 3 }, { $unset: { address: 1 } });
+```
+
+find the \_id:3 and remove address in that records
+
+---
+
 ## Replace Entire Document
 
 ```js
@@ -443,6 +561,16 @@ Deletes the first matching document.
 
 ---
 
+OR
+
+```js
+db.users.delete({ name: 'Rahul' });
+```
+
+Deletes the first matching document.
+
+---
+
 ## Delete Multiple Documents
 
 ```js
@@ -453,7 +581,53 @@ Deletes all inactive users.
 
 ---
 
-# 10. Sorting, Limiting, and Pagination
+OR
+
+```js
+db.users.remove({});
+```
+
+Deletes all users.
+
+---
+
+# 10. Projection
+
+Projection allows you to specify which fields to include or exclude in the query results.
+
+## Projection
+
+```js
+db.collectionName({ condition }, { projection });
+```
+
+E.g :
+
+```js
+db.restaurants.find({}, { restaurants_name: 1, cost: 1, _id: 0 });
+```
+
+It give only restaurant_name and cost
+
+---
+
+## Projection with condition
+
+```js
+db.collectionName({ condition }, { projection });
+```
+
+E.g :
+
+```js
+db.restaurants.find({ state_id: 1 }, { restaurants_name: 1, cost: 1, _id: 0 });
+```
+
+It give only state_id:1 with fields of restaurant_name and cost.
+
+---
+
+# 11. Sorting, Limiting, and Pagination
 
 Useful for APIs and large datasets.
 
@@ -497,7 +671,15 @@ Commonly used in pagination systems.
 
 ---
 
-# 11. Count Commands
+## Limit & Skip Documents
+
+```js
+db.users.find().skip(3).limit(3);
+```
+
+    Skip first 3 records and return only 3 records
+
+# 12. Count Commands
 
 ---
 
@@ -521,7 +703,7 @@ Faster but less accurate for very large collections.
 
 ---
 
-# 12. Index Commands
+# 13. Index Commands
 
 Indexes improve query performance.
 
@@ -559,7 +741,7 @@ Deletes the index.
 
 ---
 
-# 13. Aggregation Pipeline
+# 14. Aggregation Pipeline
 
 Aggregation processes and transforms data.
 
@@ -596,7 +778,7 @@ Explanation:
 
 ---
 
-# 14. User Authentication Commands
+# 15. User Authentication Commands
 
 Used for security and access control.
 
@@ -626,7 +808,7 @@ Displays all users in current database.
 
 ---
 
-# 15. Backup and Restore Commands
+# 16. Backup and Restore Commands
 
 Critical for production systems.
 
@@ -672,7 +854,7 @@ Imports JSON data into MongoDB.
 
 ---
 
-# 16. MongoDB Logs
+# 17. MongoDB Logs
 
 Logs help diagnose problems.
 
@@ -698,7 +880,7 @@ Useful for debugging real-time issues.
 
 ---
 
-# 17. MongoDB Configuration
+# 18. MongoDB Configuration
 
 MongoDB settings are stored in a config file.
 
@@ -726,7 +908,7 @@ sudo systemctl restart mongod
 
 ---
 
-# 18. MongoDB Port Information
+# 19. MongoDB Port Information
 
 Default MongoDB port:
 
@@ -746,7 +928,7 @@ Shows whether MongoDB is listening properly.
 
 ---
 
-# 19. Useful Linux Commands for MongoDB
+# 20. Useful Linux Commands for MongoDB
 
 ---
 
@@ -782,7 +964,7 @@ Displays database storage size.
 
 ---
 
-# 20. Important MongoDB File Locations
+# 21. Important MongoDB File Locations
 
 | Purpose     | Path               |
 | ----------- | ------------------ |
@@ -792,19 +974,15 @@ Displays database storage size.
 
 ---
 
-# 21. MongoDB Local Setup
+# 22. MongoDB Local Setup
 
 1. Install MongoDB on your machine (follow official docs).
 2. Start MongoDB service.
 3. Open Mongo shell using `mongosh`.
 4. Create a database and collection.
-5. Insert sample data and practice queries.        
+5. Insert sample data and practice queries.
 
-
-
-
-
-# 22. Official Documentation
+# 23. Official Documentation
 
 ## MongoDB Manual
 

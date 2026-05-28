@@ -1,6 +1,7 @@
 // Page - 1
 
 * List of all cities
+ > [/location](http://localhost:8000/location)
 * List of all restaurants
 * Restaurant wrt city
 * List of meal

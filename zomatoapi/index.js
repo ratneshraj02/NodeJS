@@ -17,15 +17,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-
-function auth(key) {    
-    if (key == authKey) {
-        return true;
-    } else {
-        return false;
-    }
+function auth(key) {
+	if (key == authKey) {
+		return true;
+	} else {
+		return false;
+	}
 }
-
 
 // get heart beat
 app.get('/', (req, res) => {
@@ -34,14 +32,32 @@ app.get('/', (req, res) => {
 
 //list of city
 app.get('/location', async (req, res) => {
-    let key = req.header('x-basic-token');
+	let key = req.header('x-basic-token');
 	if (auth(key)) {
 		const data = await db.collection('location').find({}).toArray();
 		res.send(data);
-    } else {
-        res.status(401).send("Not Authenticated call");
-    }
+	} else {
+		res.status(401).send('Not Authenticated call');
+	}
 });
+
+//list of restaurant
+app.get('/restaurant', async (req, res) => {
+	let query = {};
+	let stateId = Number(req.query.stateId);
+
+    if (stateId) {
+        query = { state_id: stateId };
+    } else {
+        query = {};
+    }
+
+    const data = await db.collection('restaurants').find(query).toArray();
+    res.status(200).send(data);
+});
+
+// list of meal
+
 
 const client = new MongoClient(mongoUrl);
 const dbName = 'zomatoapi';

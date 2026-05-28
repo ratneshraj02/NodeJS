@@ -3,7 +3,9 @@
 * List of all cities
  > [/location](http://localhost:8000/location)
 * List of all restaurants
+> [/restaurant](http://localhost:8000/restaurant)
 * Restaurant wrt city
+> [/restaurant?stateId=1](http://localhost:8000/restaurant?stateId=1)
 * List of meal
 
 

@@ -24,6 +24,14 @@ function auth(key) {
 		return false;
 	}
 }
+ function getData(colName, query) {
+	if (colName && query) {
+		const data =  db.collection(colName).find(query).toArray();
+		return data;
+	} else {
+		return 'Data Missing';
+	}
+}
 
 // get heart beat
 app.get('/', (req, res) => {
@@ -45,19 +53,36 @@ app.get('/location', async (req, res) => {
 app.get('/restaurant', async (req, res) => {
 	let query = {};
 	let stateId = Number(req.query.stateId);
+	let mealId = Number(req.query.mealId);
 
-    if (stateId) {
-        query = { state_id: stateId };
-    } else {
-        query = {};
-    }
+	if (stateId && mealId) {
+		query = {
+			state_id: stateId,
+			'mealTypes.mealtype_id': mealId,
+		};
+	} else if (stateId) {
+		query = { state_id: stateId };
+	} else if (mealId) {
+		query = { 'mealTypes.mealtype_id': mealId };
+	} else {
+		query = {};
+	}
 
-    const data = await db.collection('restaurants').find(query).toArray();
-    res.status(200).send(data);
+	const data = await db.collection('restaurants').find(query).toArray();
+	res.status(200).send(data);
 });
 
 // list of meal
-
+app.get('/meals', async (req, res) => {
+	let query = {};
+	let collection = 'mealType';
+	const data = await getData(collection, query);
+	if (data) {
+		res.status(200).send(data);
+	} else {
+		res.send(data);
+	}
+});
 
 const client = new MongoClient(mongoUrl);
 const dbName = 'zomatoapi';

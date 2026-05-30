@@ -31,3 +31,7 @@ export function getDataWithSortLimit(colName, query, sort, skip, limit) {
 		return 'Data Missing';
 	}
 }
+
+export async function getPostData(collName, data) {
+	return await db.collection(collName).insertOne(data);
+}

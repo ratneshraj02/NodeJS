@@ -43,6 +43,19 @@
 - Details of selected menu
 
 - Place order
+  > [/placeOrder](http://localhost:8000/placeOrder)
+  data  : 
+``` json
+  {
+    "orderId": 4,
+    "name": "Anchal",
+    "email": "anchal@gmail.com",
+    "address": "Hno 23,Sector 1",
+    "phone": 768768686,
+    "cost": 124,
+    "menuItem": [6, 34, 23]
+}
+```
 
 //Page - 5
 

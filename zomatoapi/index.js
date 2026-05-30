@@ -7,6 +7,7 @@ import {
 	getData,
 	getDataWithSort,
 	getDataWithSortLimit,
+	getPostData
 } from './controller/apiController.js';
 import { connectDB } from './db/db.js';
 
@@ -156,6 +157,15 @@ app.get('/menu/:id', async (req, res) => {
 	res.status(200).send(data);
 });
 
+//placeOrder
+app.post('/placeOrder', async (req, res) => { 
+	let data = req.body;
+	console.log("data is : ",data);	
+	let collName = 'orders';
+	let response = await getPostData(collName, data);
+	res.send(response);
+});
+
 //order
 app.get('/orders', async (req, res) => {
 	let collName = 'orders';
@@ -168,6 +178,9 @@ app.get('/orders', async (req, res) => {
 	const data = await getData(collName, query);
 	res.send(data);
  }); 
+
+
+ 
 
 app.listen(port, () => {
 	connectDB();

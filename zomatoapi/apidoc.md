@@ -40,20 +40,27 @@
 
 //Page - 4
 
-- Details of selected menu
+- Details of selected menu(POST)
 
-- Place order
+  > [/menuItem/6](http://localhost:8000/menuItem/)
+
+  ```json
+  { "id": [1, 4, 5, 6] }
+  ```
+
+- Place order(POST)
   > [/placeOrder](http://localhost:8000/placeOrder)
-  data  : 
-``` json
-  {
-    "orderId": 4,
-    "name": "Anchal",
-    "email": "anchal@gmail.com",
-    "address": "Hno 23,Sector 1",
-    "phone": 768768686,
-    "cost": 124,
-    "menuItem": [6, 34, 23]
+  > data :
+
+```json
+{
+	"orderId": 4,
+	"name": "Anchal",
+	"email": "anchal@gmail.com",
+	"address": "Hno 23,Sector 1",
+	"phone": 768768686,
+	"cost": 124,
+	"menuItem": [6, 34, 23]
 }
 ```
 
@@ -61,5 +68,19 @@
 
 - View all order/ with or without email
   > [/orders?email=aakash@gmail.com](http://localhost:8000/orders?email=aakash@gmail.com)
-- Update order details
-- Delete Order
+- Update order details(PUT)
+  > [/updateOrder/4](http://localhost:8000/updateOrder/)
+  > data:
+```json
+{
+    "_id": "6a1c9ce7fdc3469f37a4f97b",
+    "status": "Pending"
+}
+```
+- Delete Order(DELETE)
+  > [/deleteOrder/4](http://localhost:8000/deleteOrder/)
+  > data :
+```json
+{    "_id": "6a1b1ba7541fd6c7cc3a8c0b" }
+```
+

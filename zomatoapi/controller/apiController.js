@@ -35,3 +35,12 @@ export function getDataWithSortLimit(colName, query, sort, skip, limit) {
 export async function getPostData(collName, data) {
 	return await db.collection(collName).insertOne(data);
 }
+
+export async function updateData(collName, condition, data) {
+	return await db.collection(collName).updateOne(condition,data);
+}
+
+
+export async function deleteOrder(collName, query){
+	return await db.collection(collName).deleteOne(query);
+}

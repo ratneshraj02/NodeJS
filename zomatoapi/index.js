@@ -4,10 +4,12 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongodb from 'mongodb';
 import {
+	deleteOrder,
 	getData,
 	getDataWithSort,
 	getDataWithSortLimit,
-	getPostData
+	getPostData,
+	updateData,
 } from './controller/apiController.js';
 import { connectDB } from './db/db.js';
 
@@ -158,12 +160,51 @@ app.get('/menu/:id', async (req, res) => {
 });
 
 //placeOrder
-app.post('/placeOrder', async (req, res) => { 
+app.post('/placeOrder', async (req, res) => {
 	let data = req.body;
-	console.log("data is : ",data);	
 	let collName = 'orders';
 	let response = await getPostData(collName, data);
 	res.send(response);
+});
+
+//menu details {"id" : [4,6, 12] }
+app.post('/menuDetails', async (req, res) => {
+	const collName = 'menu';
+	const query = { menu_id: { $in: req.body.id } };
+	if (Array.isArray(req.body.id)) {
+		const data = await getData(collName, query);
+		res.send(data);
+	} else {
+		res.send('Please pass data in form of Array like {"id" : [4, 6, 12]}');
+	}
+});
+
+//update order
+app.put('/updateOrder', async (req, res) => {
+	const collName = 'orders';
+	const condition = { _id: new mongodb.ObjectId(req.body._id) };
+	const data = {
+		$set: { status: req.body.status },
+	};
+
+	let response = await updateData(collName, condition, data);
+	res.send(response);
+});
+
+//delete order
+app.delete('/deleteOrder', async (req, res) => {
+	const collName = 'orders';
+	const query = {_id : new mongodb.ObjectId(req.body._id) };
+
+	const rowCount = await getData(collName, query);
+
+	if (rowCount.length > 0) {
+		const response = await deleteOrder(collName, query);
+		res.send(response);
+	} else {
+		res.send('No Order Found!');
+	}
+	
 });
 
 //order
@@ -172,15 +213,12 @@ app.get('/orders', async (req, res) => {
 	let query = {};
 
 	if (req.query.email) {
-		query = {email :req.query.email};
+		query = { email: req.query.email };
 	}
 
 	const data = await getData(collName, query);
 	res.send(data);
- }); 
-
-
- 
+});
 
 app.listen(port, () => {
 	connectDB();

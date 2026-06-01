@@ -6,9 +6,9 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
 import ejs from 'ejs';
 import { configDotenv } from 'dotenv';
+import mongodb from 'mongodb';
 import { collection, dbConnection } from './db/db.js';
 import packageJson from './package.json' with { type: 'json' };
-import mongodb from 'mongodb';
 
 dotenv.config();
 
@@ -58,32 +58,54 @@ app.get('/users', async (req, res) => {
 			isActive = false;
 		} else {
 			isActive = true;
-    }
-    query = {isActive : isActive}
+		}
+		query = { isActive: isActive };
 	}
 
-	const data = await collection.find(query);
+	const data = collection.find(query);
 	for await (const doc of data) {
 		output.push(doc);
 	}
-	data.close();
+	await data.close();
 	res.send(output);
 });
 
 //get particular user
-app.get('user/:id', async (req, res) => {
-  const output = [];
-  let query = {
-		_id: new mongodb.ObjectId(req.params.id),
-	};
+app.get('/user/:id', async (req, res) => {
+	let _id = new mongodb.ObjectId(req.params.id);
+	let query = { _id: _id };
 
-  const cursor = collection.find(query);
-  for await (const doc of cursor){
-    output.push(doc);
-  }
+	const output = await collection.findOne(query);
+	res.send(output);
+});
 
-  cursor.close();
-  res.send(output);
+//update user
+app.put('/updateUser', async (req, res) => {
+	let id = req.params.id;
+	const _id = new mongodb.ObjectId(id);
+
+	const query = { _id: _id };
+
+	const data = {
+		name: req.body.name,
+		city: req.body.city,
+		phone: req.body.phone,
+		role: req.body.role,
+		isActive: true,
+  };
+  
+  await collection.updateOne(query, data);
+  res.send("records Updated");
+});
+
+/* Delete User */
+app.delete('/deleteUser', async (req, res) => {
+  
+  await collection.deleteOne({
+    _id: new mongodb.ObjectId(req.body._id)
+  });
+
+  res.send("User deleted");
 });
 
 app.listen(port, () => {

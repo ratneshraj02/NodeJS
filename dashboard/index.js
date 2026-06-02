@@ -9,6 +9,13 @@ import { configDotenv } from 'dotenv';
 import mongodb from 'mongodb';
 import { collection, dbConnection } from './db/db.js';
 import packageJson from './package.json' with { type: 'json' };
+import {
+	addUser,
+	deleteUser,
+	getData,
+	getOneUser,
+	updateUser,
+} from './controller/apiController.js';
 
 dotenv.config();
 
@@ -26,8 +33,7 @@ app.get('/health', (req, res) => {
 
 //add user
 app.post('/addUser', async (req, res) => {
-	const data = req.body;
-	await collection.insertOne(data);
+	await addUser(req.body);
 	res.send('Added User');
 });
 
@@ -54,7 +60,7 @@ app.get('/users', async (req, res) => {
 	} else if (req.query.isActive) {
 		let isActive = req.query.isActive;
 
-		if (isActive === 'false') {
+		if (isActive == 'false') {
 			isActive = false;
 		} else {
 			isActive = true;
@@ -62,7 +68,7 @@ app.get('/users', async (req, res) => {
 		query = { isActive: isActive };
 	}
 
-	const data = collection.find(query);
+	const data = getData(query);
 	for await (const doc of data) {
 		output.push(doc);
 	}
@@ -75,37 +81,64 @@ app.get('/user/:id', async (req, res) => {
 	let _id = new mongodb.ObjectId(req.params.id);
 	let query = { _id: _id };
 
-	const output = await collection.findOne(query);
+	const output = await getOneUser(query);
 	res.send(output);
 });
 
 //update user
 app.put('/updateUser', async (req, res) => {
-	let id = req.params.id;
-	const _id = new mongodb.ObjectId(id);
+	const _id = new mongodb.ObjectId(req.body.id);
 
 	const query = { _id: _id };
 
-	const data = {
-		name: req.body.name,
-		city: req.body.city,
-		phone: req.body.phone,
-		role: req.body.role,
-		isActive: true,
-  };
-  
-  await collection.updateOne(query, data);
-  res.send("records Updated");
+	await updateUser(query, {
+		$set: {
+			name: req.body.name,
+			city: req.body.city,
+			phone: req.body.phone,
+			isActive: true,
+		},
+	});
+	res.send('records Updated');
 });
 
 /* Delete User */
 app.delete('/deleteUser', async (req, res) => {
-  
-  await collection.deleteOne({
-    _id: new mongodb.ObjectId(req.body._id)
-  });
+	const _id = new mongodb.ObjectId(req.body.id);
+	let query = {
+		_id: _id,
+	};
 
-  res.send("User deleted");
+	await deleteUser(query);
+	res.send('User deleted');
+});
+
+/* soft delete */
+app.put('/deactivateUser', async (req, res) => {
+	const _id = new mongodb.ObjectId(req.body._id);
+
+	const query = { _id: _id };
+
+	await updateUser(query, {
+		$set: {
+			isActive: false,
+		},
+	});
+	res.send('user deactivate User');
+});
+
+app.put('/activateUser', async (req, res) => {
+	const _id = new mongodb.ObjectId(req.body._id);
+
+	await updateUser(
+		{ _id: _id },
+		{
+			$set: {
+				isActive: true,
+			},
+		},
+	);
+	res.send('user activated User');
 });
 
 app.listen(port, () => {

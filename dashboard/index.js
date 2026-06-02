@@ -2,13 +2,14 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import swaggerJSDoc from 'swagger-jsdoc';
-import swaggerUiExpress from 'swagger-ui-express';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger.json' with { type: 'json' };
+import mongodb from 'mongodb';
 import ejs from 'ejs';
 import { configDotenv } from 'dotenv';
-import mongodb from 'mongodb';
-import { collection, dbConnection } from './db/db.js';
 import packageJson from './package.json' with { type: 'json' };
+import { collection, dbConnection } from './db/db.js';
 import {
 	addUser,
 	deleteUser,
@@ -25,6 +26,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //health check
 app.get('/health', (req, res) => {

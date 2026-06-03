@@ -1,20 +1,15 @@
+import * as chai from 'chai';
+import { request } from 'chai-http';
+import chaiHttp from 'chai-http';
 
-import chaiHttp from "chai-http";
-import { expect } from chai;
 chai.use(chaiHttp);
 
+const { expect } = chai;
 
-describe("Testing Api", () => { 
-    it("Should return 200 for the health", (done) => {
-        chai.require('http://localhost:8000/')
-            .get('/health')
-            .then((res) => {
-                expect(res).to.have.status(200);
-                done();
-            })
-            .catch((err) => {
-                throw err;
-        })
-            
-    });
+describe('Health API', () => {
+	it('should return status 200', async () => {
+		const res = await request.execute('http://localhost:8000').get('/health');
+
+		expect(res).to.have.status(200);
+	});
 });

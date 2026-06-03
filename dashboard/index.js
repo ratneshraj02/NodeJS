@@ -36,6 +36,13 @@ app.get('/health', (req, res) => {
 
 //add user
 app.post('/addUser', async (req, res) => {
+	let data = {
+		name: req.body.name,
+		city: req.body.city,
+		phone: req.body.phone,
+		role: req.body.role ? req.body.role:"User",
+		isActive:true,
+	};
 	await addUser(req.body);
 	res.send('Added User');
 });
@@ -90,7 +97,7 @@ app.get('/user/:id', async (req, res) => {
 
 //update user
 app.put('/updateUser', async (req, res) => {
-	const _id = new mongodb.ObjectId(req.body.id);
+	const _id = new mongodb.ObjectId(req.body._id);
 
 	const query = { _id: _id };
 

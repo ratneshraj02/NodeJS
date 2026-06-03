@@ -112,15 +112,42 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"id": "string",
 								"type": "object"
 							},
 							"example": {
-								"name": "Keerti",
-								"city": "Sonpur",
-								"phone": "8521223881",
-								"role": "User",
+                "id":"string",
+                "_id": "6a1ceb907eb03b673268b9b6",
+								"name": "Anchal",
+								"city": "Paris",
+								"phone": "6456454532",
+								"role": "Admin",
 								"isActive": true
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User Details"
+					}
+				}
+			}
+		},
+		"/deleteUser": {
+			"summary": "Testing User for app",
+			"delete": {
+				"description": "Testing Delete User for app",
+				"tags": ["PUBLIC ROUTE"],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object"
+							},
+							"example": {
+                "id": "string",
+                "_id" : "6a1ceba37eb03b673268b9b8"
 							}
 						}
 					}

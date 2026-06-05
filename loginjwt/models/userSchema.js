@@ -7,7 +7,11 @@ const userSchema = new Schema({
 	password: String,
 	phone: Number,
 	role: String,
-});
+
+}, {
+	versionKey: false
+}
+);
 
 const User = mongoose.model('users', userSchema);
 

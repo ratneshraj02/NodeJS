@@ -74,4 +74,20 @@ router.post('/login', async (req, res) => {
 	}
 });
 
+//user info
+router.get('/userInfo', async (req, res) => {
+	let token = req.header('x-access-token');
+
+	if (!token) {
+		res.send({ auth: false, token: 'No token provided' });
+	}
+
+	//jwt verify
+	await JsonWebToken.verify(token, process.env.JWT_TOKEN, async (err, user) => {
+		if (err) res.send({ auth: false, token: 'Invalid Token' });
+		let output = await User.findById(user.id);
+		res.send(output);
+	});
+});
+
 export default router;

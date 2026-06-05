@@ -1,1 +1,1 @@
-export const DB_NAME = 'ToDo'
+export const DB_NAME = 'loginjwt'

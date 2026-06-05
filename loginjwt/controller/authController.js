@@ -40,5 +40,38 @@ router.post('/register', async (req, res) => {
 	}
 });
 
+//login user
+
+// login user
+router.post('/login', async (req, res) => {
+	try {
+		const user = await User.findOne({ email: req.body.email });
+
+		if (!user) {
+			return res.send({
+				auth: false,
+				message: 'No user found. Register first.',
+			});
+		}
+
+		const passIsValid = bcrypt.compareSync(req.body.password, user.password);
+
+		if (!passIsValid) {
+			return res.send({ auth: false, message: 'Invalid password' });
+		}
+
+		const token = await JsonWebToken.sign(
+			{ id: user._id },
+			process.env.JWT_TOKEN,
+			{ expiresIn: 86400 }, // 24 hours
+		);
+
+		return res.send({ auth: true, token });
+	} catch (err) {
+		return res
+			.status(500)
+			.send({ auth: false, message: 'Server error', error: err.message });
+	}
+});
 
 export default router;

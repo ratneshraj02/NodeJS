@@ -12,7 +12,7 @@ const connectDB = async () => {
 			throw new Error('MongoDB url not found');
 		}
 
-		await mongoose.connect(`${mongoUrl}${dbName}`);
+		await mongoose.connect(`${mongoUrl}/${dbName}`);
 		console.log('MongoDB Connected');
 	} catch (err) {
 		console.log('MongoDB connection failed', err.message);

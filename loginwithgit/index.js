@@ -9,7 +9,7 @@ const port = 8000;
 
 
 app.get('/', (req, res) => {
-	res.send('Hello World');
+	res.send('<a href="https://github.com/login/oauth/authorize?client_id"> Login With Github</a>');
 });
 
 app.listen(port, () => {

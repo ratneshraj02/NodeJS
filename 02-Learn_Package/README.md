@@ -1,4 +1,45 @@
-# learnpackage : npm
+# NPM : Node Package Manager
+ NPM is a registry which contains all the packages that are available for Node.js. It is going to have one more thing that is called as how to manage that package for the application
+
+ Package : NodeJS is a server side language, but it requires many more dependency, many more depended package.
+
+E.g : -
+1. Making Own : - We can make our own package and use it in our project.
+2. Using Third Party Package : - We can use third party package in our project. It is very easy to use third party package in our project. We just need to install the package and use it in our project.
+
+NPM is a package manager which have a lot of package accounting to our requirement. we have to use those package.
+
+Every package has own functionality. there is no any list available to this package do this.
+
+How to decide which package is best for our project?
+    1. figure out the requirement of the project.
+    2. figure out which package is more updated.
+    3. which package in more popular.
+    4. Quickly check the documentation of the package.
+
+Opensource has security risk : 
+There are two ways to deal with this risk : 
+
+1. Nexus repo : 
+    Nexus repo is a repository which contains all the packages that are available for Node.js. It is a private repository which is maintained by the company. It is a secure repository which is used to store the packages that are used in the project.       
+2. Snyk :  
+    Snyk is a tool which is used to find the vulnerabilities in the packages that are used in the project. It is a free tool which is used to find the vulnerabilities in the packages that are used in the project. It is a very useful tool which is used to find the vulnerabilities in the packages that are used in the project.     
+
+
+## JSON : Javascript Object Notation
+  It is a way represent data in key:value pair.
+  [
+    {
+        "name": "John",
+        "age": 30,
+        "city": "New York"  
+    },
+    {
+        "name": "Jane",
+        "age": 25,
+        "city": "London"
+    }
+  ]
 
 ## package.json
 

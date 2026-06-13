@@ -1,7 +1,7 @@
 import express from 'express';
 import { BOOKS } from '../models/book.js';
 import {
-    getAllBook,
+	getAllBook,
 	getBookById,
 	createBook,
 	deleteBookById,
@@ -16,6 +16,5 @@ router.get('/:id', getBookById);
 router.post('/', createBook);
 
 router.delete('/:id', deleteBookById);
-
 
 export default router;

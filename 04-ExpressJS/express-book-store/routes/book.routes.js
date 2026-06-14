@@ -1,5 +1,5 @@
 import express from 'express';
-import { BOOKS } from '../models/book.js';
+import { booksTable, authorTable} from '../models/index.js';
 import {
 	getAllBook,
 	getBookById,

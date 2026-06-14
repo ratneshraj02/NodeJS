@@ -1,5 +1,5 @@
 import { pgTable, varchar, text, uuid } from 'drizzle-orm/pg-core';
-import authorTable from './author.model';
+import authorTable from './author.model.js';
 
 
 const booksTable = pgTable('books', {

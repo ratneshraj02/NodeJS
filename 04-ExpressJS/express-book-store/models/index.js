@@ -1,8 +1,8 @@
-import authorTable from "./author.model";
-import booksTable from "./book.model";
+import authorTable from "./author.model.js";
+import booksTable from "./book.model.js";
 
 
 export {
     authorTable,
     booksTable
- };
+ }

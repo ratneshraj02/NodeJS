@@ -1,56 +1,47 @@
-import authorTable from '../models/author.model';
-import booksTable from '../models/book.model';
+import { booksTable, authorTable } from '../models/index.js';
+import db from '../db/index.js';
+import { eq } from 'drizzle-orm';
 
-import db from '../db/index';
-
-export function getAllBook(req, res) {
-	res.send(BOOKS);
+export async function getAllBook(req, res) {
+	const books = await db.select().from(booksTable);
+	res.json(books);
 }
 
-export function getBookById(req, res) {
-	const id = parseInt(req.params.id);
+export async function getBookById(req, res) {
+	const id = req.params.id;
 
-	if (isNaN(id)) {
-		res.status(400).json({ error: `id must be types number` });
-	}
-	const book = BOOKS.find((ele) => ele.id === id);
+	const book = await db
+		.select()
+		.from(booksTable)
+		.where((table) => eq(table.id, id))
+		.limit(1);
 
 	if (!book) return res.status(404).send({ error: `Book ${id} doesn't found` });
 
-	res.send(book);
+	res.json(book);
 }
 
-export function createBook(req, res) {
-	const { title, author } = req.body;
+export async function createBook(req, res) {
+	const { title, description, authorId } = req.body;
 
 	if (!title || title === '') {
 		return res.status(400).json({ error: 'title is required' });
 	}
 
-	if (!author || author === '') {
-		return res.status(400).json({ error: 'author is required' });
-	}
+	const book = { title, description, authorId };
 
-	const id = BOOKS.length + 1;
-	console.log(id);
-
-	const book = { id, title, author };
-
-	BOOKS.push(book);
-	return res.status(201).json({ message: `Book created success :${id}` });
+	const [result] = await db
+		.insert(booksTable)
+		.values(book)
+		.returning({ id: booksTable.id });
+	return res
+		.status(201)
+		.json({ message: `Book created success`, id: result.id });
 }
 
-export function deleteBookById(req, res) {
-	const id = parseInt(req.params.id);
-	console.log(id);
+export async function deleteBookById(req, res) {
+	const id = req.params.id;
 
-	if (isNaN(id)) {
-		res.status(400).json({ error: `id must be types number` });
-	}
-
-	if (id < 0) {
-		return res.status(400).json({ error: `Book with ${id} doesn't exist` });
-	}
-	BOOKS.splice(id, 1);
-	res.status(200).json({ message: 'book deleted' });
+	const result = await db.delete(booksTable).where(eq(booksTable.id, id));
+	res.status(200).json({ message: `book deleted` });
 }

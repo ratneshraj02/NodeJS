@@ -1,0 +1,16 @@
+import express from 'express';
+import userRouter from './routes/user.router.js'
+
+const app = express();
+const port = process.env.PORT || 8000;
+
+//middleware
+app.use(express.json());
+
+
+app.use('/', userRouter);
+
+
+app.listen(port, () => {
+    console.log(`Server is listening port : ${port}`);
+})

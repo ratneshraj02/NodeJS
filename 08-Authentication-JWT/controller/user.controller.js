@@ -46,6 +46,7 @@ async function loginController(req, res) {
 		.select({
 			id: userTable.id,
 			email: userTable.email,
+			name : userTable.name,
 			salt: userTable.salt,
 			password: userTable.password,
 		})
@@ -72,7 +73,6 @@ async function loginController(req, res) {
 	};
 
 	const token = jwt.sign(payload, process.env.JWT_SECRET);
-	console.log(token);
 
 	return res.json({ status: 'success', token: token });
 }

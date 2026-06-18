@@ -13,7 +13,6 @@ import { userTable } from '../db/schema.js';
 const router = express.Router();
 
 router.patch('/', updateController);
-
 router.get('/', isLoginController);
 router.post('/login', loginController);
 router.post('/signup', signupController);

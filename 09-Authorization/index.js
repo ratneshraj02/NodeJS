@@ -1,5 +1,5 @@
-import express from 'express'
-import {} from './routers/index.js';
+import express from 'express';
+import { userRouter, adminRouter } from './routers/index.js';
 import { tokenMiddleware } from './middleware/index.js';
 
 const app = express();
@@ -12,8 +12,8 @@ app.get('/', function (req, res) {
 	res.send('Hello World');
 });
 
-app.use('/user', );
-app.use('/admin', );
+app.use('/user', userRouter);
+app.use('/admin', adminRouter);
 
 app.listen(port, () => {
 	console.log(`Server is listening port : ${port}`);

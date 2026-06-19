@@ -28,7 +28,7 @@ async function authenticationMiddleware(req, res, next) {
 
 async function ensureAuthenticated(req, res, next) {
 	if (!req.user) {
-		return res.status(404).json({ error: 'You must be authenticated' });
+		return res.status(401).json({ error: 'You must be authenticated' });
 	}
 
 	next();

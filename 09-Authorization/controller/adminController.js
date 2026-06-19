@@ -1,5 +1,5 @@
 import db from '../db/index.js';
-import { userTable } from '../models/index.js';
+import { userTable } from '../models/userModel.js';
 
 async function seeAllUser(req, res) {
     

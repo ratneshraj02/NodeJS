@@ -8,8 +8,8 @@ const port = process.env.PORT || 8000;
 app.use(express.json());
 app.use(authenticationMiddleware);
 
-app.get('/', function (req, res) {
-	res.send('Hello World');
+app.get('/', (req, res) => {
+	return res.json({ status: 'Server is up and running' });
 });
 
 app.use('/user', userRouter);

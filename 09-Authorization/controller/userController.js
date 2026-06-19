@@ -1,8 +1,9 @@
 import db from '../db/index.js';
-import { userTable } from '../models/index.js';
+import { userTable } from '../models/userModel.js';
 import { randomBytes, createHmac } from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
+import { eq } from 'drizzle-orm';
 
 async function signController(req, res) {
 	const { name, email, password } = req.body;
@@ -10,9 +11,9 @@ async function signController(req, res) {
 	const [existingUser] = await db
 		.select({ email: userTable.email })
 		.from(userTable)
-		.where((table) => table.email, email);
+		.where((table) => eq(table.email, email));
 
-	if (!existingUser) {
+	if (existingUser) {
 		res.status(400).json({ error: 'User already exist, Login' });
 	}
 
@@ -23,7 +24,7 @@ async function signController(req, res) {
 
 	const [user] = await db
 		.insert(userTable)
-		.value({
+		.values({
 			name,
 			email,
 			password: hashPassword,
@@ -47,7 +48,7 @@ async function loginController(req, res) {
 			password: userTable.password,
 		})
 		.from(userTable)
-		.where((table) => table.email, email);
+		.where((table) => eq(table.email, email));
 
 	if (!existingUser) {
 		res.status(404).json({ error: "user and email don't exist" });
@@ -71,7 +72,7 @@ async function loginController(req, res) {
 
 	const token = jwt.sign(payload, process.env.JWT_SECRET);
 
-	return res.status(201).json({ status: success, token: token });
+	return res.status(201).json({ status: "success", token: token });
 }
 
 async function isLoginController(req, res) {

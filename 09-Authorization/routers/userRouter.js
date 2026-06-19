@@ -9,8 +9,8 @@ import { ensureAuthenticated } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/signup', ensureAuthenticated, signController);
-router.post('/login', ensureAuthenticated, loginController);
+router.post('/signup', signController);
+router.post('/login', loginController);
 router.get('/', ensureAuthenticated, isLoginController);
 
 export default router;

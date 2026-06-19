@@ -38,48 +38,44 @@ async function loginController(req, res) {
 	const { email, password } = req.body;
 
 	const [existingUser] = await db
-        .select({
-            id: userTable.id,
-            email: userTable.email,
-            name: userTable.name,
-            password : userTable.password,
-        })
+		.select({
+			id: userTable.id,
+			email: userTable.email,
+			name: userTable.name,
+			salt: userTable.salt,
+			role : userTable.role,
+			password: userTable.password,
+		})
 		.from(userTable)
-        .where((table) => table.email, email);
-    
-    if (!existingUser) {
-        res.status(404).json({ error: "user and email don't exist" });
-    }
+		.where((table) => table.email, email);
 
-    const salt = existingUser.salt;
-    const existingHash = existingUser.password;
+	if (!existingUser) {
+		res.status(404).json({ error: "user and email don't exist" });
+	}
 
+	const salt = existingUser.salt;
+	const existingHash = existingUser.password;
 
-    const newHash = createHmac('sha256', salt).update(password).digest('hex');
+	const newHash = createHmac('sha256', salt).update(password).digest('hex');
 
-    if(newHash != existingHash) {
-        res.status(400).json({ error: "password in incorrect" });
-    }
+	if (newHash != existingHash) {
+		res.status(400).json({ error: 'password in incorrect' });
+	}
 
-    const payload = {
-        id: existingUser.id,
-        name: existingUser.name,
-        email: existingUser.email,
-    }
+	const payload = {
+		id: existingUser.id,
+		name: existingUser.name,
+		email: existingUser.email,
+		role : existingUser.role,
+	};
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET);
+	const token = jwt.sign(payload, process.env.JWT_SECRET);
 
-    return res.status(201).json({status : success, token:token});
+	return res.status(201).json({ status: success, token: token });
 }
 
 async function isLoginController(req, res) {
-    const user = req.user;
-
-    if (!user) {
-        res.status(401).json({error : "You are not logged in"});
-    }
-
-    res.status(201).json({ user: user });
+	res.status(201).json({ user: user });
 }
 
 export { signController, loginController, isLoginController };

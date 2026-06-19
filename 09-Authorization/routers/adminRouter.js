@@ -1,8 +1,17 @@
 import express from 'express';
-import { adminLogin } from '../controller/adminController.js';
+import { seeAllUser } from '../controller/adminController.js';
+import {
+	ensureAuthenticated,
+	restrictToRole,
+} from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', adminLogin);
+const adminRestrictedMiddleware = restrictToRole('ADMIN');
 
-export { router };
+router.use(ensureAuthenticated);
+router.use(adminRestrictedMiddleware);
+
+router.get('/users', seeAllUser);
+
+export default router;

@@ -1,5 +1,8 @@
-import { signController, loginController, isLoginController } from './userController.js';
-import { adminLogin } from './adminController.js';
+import {
+	signController,
+	loginController,
+	isLoginController,
+} from './userController.js';
+import { seeAllUser } from './adminController.js';
 
-
-export { signController, adminLogin, loginController, isLoginController };
+export { signController, loginController, isLoginController, seeAllUser };

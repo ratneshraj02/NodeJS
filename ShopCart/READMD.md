@@ -11,8 +11,16 @@
 3. Install the required dependencies using npm:
    ```
    npm install
-   ```                  
+   ```
 4. Start the development server:
    ```
    npm run dev
+   ```
+5. Create a .env file in the root directory of the project and add the the following environment variables:
+   ```
+   PORT=3000
+   ```
+6. Start the application in production mode:
+   ```
+   npm run start
    ```

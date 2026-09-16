@@ -1,12 +1,13 @@
 const express = require('express');
+const { PORT } = require('./config/serverConfig.js');
 
 const app = express();
-const port = 8000;
+
 
 app.get('/', (req, res) => {
 	res.send('Hello World');
 });
 
-app.listen(port, () => {
-	console.log(`server is listening port ${port}`);
+app.listen(PORT, () => {
+	console.log(`server is listening port ${PORT}`);
 });

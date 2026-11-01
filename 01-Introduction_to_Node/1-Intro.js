@@ -18,7 +18,23 @@
         V8 Engine
                     ==> NodeJS(Runtime Environment)
            C++
+[ libuv async I/O layer single thread]
+
+/*
+    V8 :
+    - It oversource engine that is made by Google, It help to run the javascript outside from browser.
+    - It manage the heap and call stack
+    - It does't knows nothing about files, network or timers
+*/
+/*
+    LibuV(c Library) :  Event loop, thread pool, OS level async I/O, DNS lookup
+*/
+/*
+    NodeJS Binding(C++) : 
+        bridge between js to libuv and v8 engine
+*/
     
+/*
     Browser Runtime Capability :
                 -> accessing DOM tree
                 -> accessing CSSOM tree

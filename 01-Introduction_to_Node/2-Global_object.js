@@ -51,3 +51,8 @@ console.log("Node JS version", process.version);
 */
 console.log(__dirname);
 console.log(__filename);
+
+/* globalThis */
+/*
+    
+*/

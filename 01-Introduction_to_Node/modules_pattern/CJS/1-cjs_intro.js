@@ -7,7 +7,7 @@
 /*
     In NodeJS, "module.exports" is an object that is used to define what a module exports and makes available for other module to use.
 
-    When we create a module in NodeJS, any variable, functions or object that we want to expose to other mdoules mus tbe added to the "module.exports" objects.
+    When we create a module in NodeJS, any variable, functions or object that we want to expose to other modules mus tbe added to the "module.exports" objects.
 
     for example, we have a file called my module and we want to export a function called "addNumbers"
 

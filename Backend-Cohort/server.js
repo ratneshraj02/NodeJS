@@ -2,15 +2,14 @@ import { connect } from 'mongoose';
 import app from './src/app.js';
 import 'dotenv/config';
 import connectDB from './src/common/config/db.js';
-
 const PORT = process.env.PORT;
 
 const start = async () => {
     await connectDB();
 	app.listen(PORT, () => {
-		console.log(`Server is listening ${PORT} in ${process.env.NODE_ENV} mode`);
+        console.log(`Server is listening PORT in ${PORT} development mode`);
 	});
-};
+}
 
 start()
     .catch((err) => {

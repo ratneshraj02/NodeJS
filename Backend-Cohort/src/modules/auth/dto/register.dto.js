@@ -7,7 +7,9 @@ class RegisterDto extends BaseDto {
 		email: Joi.string().email().lowercase().required(),
 		password: Joi.string()
 			.min(8)
+			.pattern(/(?=.*[A-Z])(?=.*\d)/)
 			.required(),
+
 		role: Joi.string().valid('customer', 'seller').default('customer'),
 	});
 }

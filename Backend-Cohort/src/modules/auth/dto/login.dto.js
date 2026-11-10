@@ -6,7 +6,7 @@ class LoginDto extends BaseDto {
 		email: Joi.string().email().lowercase().required(),
 		password: Joi.string()
             .min(8)
-            .max(8)
+            .max(16)
 			.required()
 	});
 }

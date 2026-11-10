@@ -1,13 +1,15 @@
-import { connect } from 'mongoose';
 import app from './src/app.js';
 import 'dotenv/config';
 import connectDB from './src/common/config/db.js';
-const PORT = process.env.PORT;
+
+
+const PORT = process.env.PORT || 8000;
 
 const start = async () => {
+    //connect to database
     await connectDB();
 	app.listen(PORT, () => {
-        console.log(`Server is listening PORT in ${PORT} development mode`);
+        console.log(`Server is listening ${PORT} in ${process.env.NODE_ENV}`);
 	});
 }
 

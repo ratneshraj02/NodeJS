@@ -1,5 +1,6 @@
 import * as authService from './auth.service.js';
 import ApiResponse from '../../common/utils/api-response.js';
+import ApiError from '../../common/utils/api-error.js';
 
 const register = async (req, res) => {
 	const user = await authService.register(req.body);
@@ -11,6 +12,8 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
+	const { email, password } = req.body;
+	console.log(email, password);
 	const { user, accessToken, refreshToken } = await authService.login(req.body);
 
 	//refresh token goes in httpOnly cookie - not accessible to JS
@@ -56,6 +59,27 @@ const getMe = async (req, res) => {
 	ApiResponse.ok(res, 'User Profile', user);
 };
 
+const uploadAvatar = async (req, res) => {
+	try {
+		const file = req.file;
+		console.log(file);
+		if (!file) {
+			return ApiError.badRequest(
+				res,
+				"No file uploaded. Please send file with field name 'avatar'",
+			);
+		}
+
+		const result = authService.avatarUpload(req.user.id, file);
+
+		return ApiResponse(res, 'Avatar uploaded successfully', {
+			avatarUrl: result.url,
+		});
+	} catch (error) {
+		return ApiError.internal(res, error.message || 'Failed to upload avatar');
+	}
+};
+
 const healthCheck = async (req, res) => {
 	const msg = 'Health Check';
 	ApiResponse.ok(res, msg);
@@ -71,4 +95,5 @@ export {
 	refresh,
 	forgotPassword,
 	resetPassword,
+	uploadAvatar,
 };

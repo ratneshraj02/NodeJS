@@ -11,7 +11,7 @@ class ApiResponse {
     }
 
 
-    static created(req, message, data = null) {
+    static created(res, message, data = null) {
         res.status(201).json({
             success: true,
             message,

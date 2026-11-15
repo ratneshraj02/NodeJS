@@ -20,6 +20,7 @@ const sendResetPasswordHTML = function (url) {
 const transporter = nodemailer.createTransport({
 	host: process.env.SMTP_HOST,
 	port: Number(process.env.SMTP_PORT) || 567,
+	secure : false,
 	auth: {
 		user: process.env.SMTP_USER,
 		pass: process.env.SMTP_PASS,
@@ -33,11 +34,12 @@ const sendEmail = async (to, subject, html) => {
 		subject,
 		html,
 	});
+
 };
 
 const sendVerificationEmail = async (email, token) => {
 	const url = `${process.env.CLIENT_URL}/verify-email/${token}`;
-	await transporter.sendMail(email, 'Verify you email', sendVerifyHTML(url));
+	await sendEmail(email, 'Verify you email', sendVerifyHTML(url));
 };
 
 const sendResetPasswordEmail = async (email, order) => {

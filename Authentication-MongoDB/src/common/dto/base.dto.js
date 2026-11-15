@@ -1,20 +1,20 @@
-import Joi from "joi";
+import Joi from 'joi';
 
-class BaseDto { 
-    
-    static schema = Joi.object({});
+class BaseDto {
+	static schema = Joi.object({});
 
-    static validate(data) {
-        const {error} = this.schema.validate(data, {
-            abortEarly: true,
-            stripUnknown : true,
-        })
-        if (error) {
-            const error = error.details.map((e) => e.message)
-            return {error, value : null}
-        }
-        return { error: null, data }
-    }
+	static validate(data) {
+		const {error, value} = this.schema.validate(data, {
+			abortEarly: false,
+			stripUnknown: true,
+        });
+        
+		if (error) {
+            const errors = error.details.map((e) => e.message);
+			return { errors, value: null };
+		}
+		return { error: null, value };
+	}
 }
 
 export default BaseDto;

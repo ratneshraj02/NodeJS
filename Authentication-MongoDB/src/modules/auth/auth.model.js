@@ -35,6 +35,10 @@ const userSchema = new Schema(
             default: false,
             
         },
+        avatar: {
+            type: String,
+            default: false,
+        },
         verificationToken: {
             type : String, select : false,
         },
@@ -49,7 +53,7 @@ const userSchema = new Schema(
         resetPasswordExpires: {
             type: Date,
             select: false,
-        }
+        },
 	},
 	{
 		timestamps: true,
@@ -58,7 +62,7 @@ const userSchema = new Schema(
 
 //Hash password before saving
 userSchema.pre("save", async function () {
-    if (this.isModified("password")) return next();
+    if (this.isModified("password")) return;
     this.password = bcrypt.hash(this.password,10);
 });
 

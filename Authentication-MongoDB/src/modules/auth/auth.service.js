@@ -11,6 +11,7 @@ import {
 	sendVerificationEmail,
 	sendResetPasswordEmail,
 } from '../../common/config/email.js';
+import { uploadCloudinary } from '../../common/utils/upload-cloudinary.js';
 
 //Hash refresh token before saving - same approach as reset tokens
 function hashedToken(token) {
@@ -41,7 +42,7 @@ const register = async ({ name, email, password, role }) => {
 		console.error('Failed to send verification email:', error.message);
 	}
 
-	const userObj = user.toObject();
+	const userObj = {...user};
 	delete userObj.password;
 	delete userObj.verificationToken;
 
@@ -179,12 +180,32 @@ const verifyEmail = async (token) => {
 };
 
 const getMe = async (userId) => {
-	const user = await User.findById({ userId });
+	const result = imageKit.files.upload({
+		file: fs.createReadStream('public/uploads'),
+		fileName: 'file-name'.jpg,
+	});
+};
 
-	if (!user) {
-		throw ApiError.notfound('User not found ');
+const avatarUpload = async (userId, file) => {
+	try {
+		console.log(file);
+		const uploadResponse = await uploadCloudinary(file);
+
+		await User.findByIdAndUpdate(
+			userId,
+			{ avatar: response.url },
+			{ new: true },
+		);
+
+		
+
+		return {
+			url: uploadResponse.url,
+			fileId: uploadResponse.fileId,
+		};
+	} catch (error) {
+		throw error;
 	}
-	return user;
 };
 
 export {
@@ -196,4 +217,5 @@ export {
 	resetPassword,
 	verifyEmail,
 	getMe,
+	avatarUpload,
 };

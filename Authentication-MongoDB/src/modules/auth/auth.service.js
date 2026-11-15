@@ -14,7 +14,7 @@ import {
 import { uploadCloudinary } from '../../common/utils/upload-cloudinary.js';
 
 //Hash refresh token before saving - same approach as reset tokens
-function hashedToken(token) {
+export function hashedToken(token) {
 	return crypto.createHash('sha256').update(token).digest('hex');
 }
 
@@ -42,7 +42,7 @@ const register = async ({ name, email, password, role }) => {
 		console.error('Failed to send verification email:', error.message);
 	}
 
-	const userObj = {...user};
+	const userObj = { ...user };
 	delete userObj.password;
 	delete userObj.verificationToken;
 
@@ -60,9 +60,11 @@ const login = async ({ email, password }) => {
 	const isMatch = await user.comparePassword(password);
 	if (!isMatch) throw ApiError.unauthorized('Invalid email or Password');
 
+	/*
 	if (!user.isVerified) {
 		throw ApiError.forbidden('Please verify your email before logging in');
 	}
+	*/
 
 	const accessToken = generateAccessToken({
 		id: user._id,
@@ -188,21 +190,23 @@ const getMe = async (userId) => {
 
 const avatarUpload = async (userId, file) => {
 	try {
-		console.log(file);
-		const uploadResponse = await uploadCloudinary(file);
-
+		const uploadResponse = await uploadCloudinary(file.path);
 		await User.findByIdAndUpdate(
 			userId,
-			{ avatar: response.url },
-			{ new: true },
+			{
+				$set: {
+					avatar: uploadResponse.url,
+				},
+			},
+			{ returnDocument: 'after' },
 		);
-
 		
-
-		return {
+		const result = {
 			url: uploadResponse.url,
-			fileId: uploadResponse.fileId,
+			fileId : uploadResponse.fileId
 		};
+
+		return result;
 	} catch (error) {
 		throw error;
 	}

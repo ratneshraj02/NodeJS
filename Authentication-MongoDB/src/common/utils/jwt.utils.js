@@ -9,9 +9,7 @@ const generateAccessToken = (payload) => {
 };
 
 const verifyAccessToken = (token) => {
-	const isVerify = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-
-	return isVerify;
+	return jwt.verify(token, process.env.JWT_ACCESS_SECRET);
 };
 
 const generateRefreshToken = (payload) => {
@@ -23,8 +21,7 @@ const generateRefreshToken = (payload) => {
 };
 
 const verifyRefreshToken = (token) => {
-	const isVerify = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-	return isVerify;
+	return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 };
 
 const generateResetToken = (data) => {

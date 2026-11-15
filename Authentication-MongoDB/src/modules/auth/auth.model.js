@@ -62,14 +62,13 @@ const userSchema = new Schema(
 
 //Hash password before saving
 userSchema.pre("save", async function () {
-    if (this.isModified("password")) return;
-    this.password = bcrypt.hash(this.password,10);
+    if (!this.isModified("password")) return;
+    this.password = await bcrypt.hash(this.password,10);
 });
 
 //compare password
 userSchema.methods.comparePassword = async function (userPassword){
     return await bcrypt.compare(userPassword, this.password);
 }
-
 
 export default mongoose.model('User', userSchema);

@@ -1,6 +1,8 @@
 import * as authService from './auth.service.js';
 import ApiResponse from '../../common/utils/api-response.js';
 import ApiError from '../../common/utils/api-error.js';
+import cookieParser from 'cookie-parser';
+
 
 const register = async (req, res) => {
 	const user = await authService.register(req.body);
@@ -12,17 +14,20 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-	const { email, password } = req.body;
-	console.log(email, password);
 	const { user, accessToken, refreshToken } = await authService.login(req.body);
 
 	//refresh token goes in httpOnly cookie - not accessible to JS
-	res.cookieParser('refreshToken', refreshToken, {
+	const options = {
 		httpOnly: true,
 		secure: true,
 		sameSite: 'strict',
 		maxAge: 7 * 24 * 60 * 60 * 1000, //7 Day
-	});
+	};
+
+	res
+		.cookie('refreshToken', refreshToken, options)
+		.cookie('accessToken', accessToken, options);
+
 
 	return ApiResponse.ok(res, 'Login successfully', { user, accessToken });
 };
@@ -36,6 +41,7 @@ const refresh = async (req, res) => {
 const logout = async (req, res) => {
 	await authService.logout(req.user.id);
 	res.clearCookie('refreshToken');
+	res.clearCookie('accessToken');
 	ApiResponse.ok(res, 'Logout Successfully');
 };
 
@@ -62,7 +68,6 @@ const getMe = async (req, res) => {
 const uploadAvatar = async (req, res) => {
 	try {
 		const file = req.file;
-		console.log(file);
 		if (!file) {
 			return ApiError.badRequest(
 				res,
@@ -70,10 +75,11 @@ const uploadAvatar = async (req, res) => {
 			);
 		}
 
-		const result = authService.avatarUpload(req.user.id, file);
+		const {url, fileId} = await authService.avatarUpload(req.user.id, file);
 
-		return ApiResponse(res, 'Avatar uploaded successfully', {
-			avatarUrl: result.url,
+		return ApiResponse.ok(res, 'Avatar uploaded successfully', {
+			avatarUrl: url,
+			fileId,
 		});
 	} catch (error) {
 		return ApiError.internal(res, error.message || 'Failed to upload avatar');

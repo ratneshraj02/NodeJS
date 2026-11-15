@@ -1,26 +1,29 @@
-import { cloudinaryConfig } from '../config/cloudinary.js';
+import { v2 as cloudinary } from 'cloudinary';
 import fs from 'node:fs';
+
+cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const uploadCloudinary = async (localFilePath) => {
 	try {
-		if (!localFile) return null;
+		if (!localFilePath) return null;
 
 		//upload to cloudinary
 		const options = { resource_type: 'auto', use_filename: true, secure: true };
-		const cloudinaryResult = await cloudinaryConfig.uploader.upload(
-			localFile,
-			options,
-		);
+
+		const cloudinaryResult = await cloudinary.uploader.upload(localFilePath, options);
 
 		return cloudinaryResult;
 	} catch (error) {
-		console.log('Temporary file deleted:', localFilePath);
-		console.error(error);
+		throw error;
 	} finally {
 		if (fs.existsSync(localFilePath)) {
-			fs.unlinkSync(localFile.path);
+			fs.unlinkSync(localFilePath);
 		}
 	}
 };
 
-export {uploadCloudinary}
+export { uploadCloudinary };

@@ -19,7 +19,7 @@ router.post('/login', validate(LoginDto), controller.login);
 
 router.post('/refresh-token', controller.refresh);
 
-router.post('logout', authenticate, controller.logout);
+router.post('/logout', authenticate, controller.logout);
 
 router.get('/verify-email/:token', controller.verifyEmail);
 router.post(

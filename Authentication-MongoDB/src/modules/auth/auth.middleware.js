@@ -1,47 +1,43 @@
-import ApiError from "../../common/utils/api-error.js";
-import { verifyAccessToken } from "../../common/utils/jwt.utils.js";
-import User from "../auth/auth.model.js";
-
+import ApiError from '../../common/utils/api-error.js';
+import { verifyAccessToken } from '../../common/utils/jwt.utils.js';
+import User from '../auth/auth.model.js';
+import { hashedToken } from '../auth/auth.service.js';
 
 const authenticate = async (req, res, next) => {
+	let token =
+		req.cookies?.accessToken ||
+		req.header('Authorization')?.replace('Bearer ', '');
 
-    let token;
-
-    if (req.headers.authorization?.startWith("Bearer")) {
-        token = req.headers.headers.authorization.split(" ")[1];
+	if (!token) {
+		throw ApiError.unauthorized('Not authenticated');
     }
-
-    if (!token) {
-        throw ApiError.unauthorized("Not authenticated");
-    }
-
+    
     const decoded = verifyAccessToken(token);
-    const user = await User.findById(decoded.token);
+	const user = await User.findById(decoded.id);
 
-    if (!user) {
-        throw ApiError.unauthorized("User no longer exist");
-    }
+	if (!user) {
+		throw ApiError.unauthorized('User no longer exist');
+	}
 
-    req.user = {
-        id: user._id,
-        role: user.role,
-        name: user.name,
-        email: user.email,
-    }
+	req.user = {
+		id: user._id,
+		role: user.role,
+		name: user.name,
+		email: user.email,
+	};
 
-    next();
+	next();
 };
 
 const authorize = (...roles) => {
-    return (req, res, next) => {
-        if (!roles.includes(req.user.role)) {
-            throw ApiError.forbidden(
-                "You do not have permission to perform this action"
-            )
-        }
-        next();
-    }
-}
-
+	return (req, res, next) => {
+		if (!roles.includes(req.user.role)) {
+			throw ApiError.forbidden(
+				'You do not have permission to perform this action',
+			);
+		}
+		next();
+	};
+};
 
 export { authenticate, authorize };

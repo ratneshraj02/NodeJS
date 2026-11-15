@@ -27,6 +27,10 @@ class ApiError extends Error {
         return new ApiError(412, message);
     }
 
+    static internal(message = "internal server error") {
+        return new ApiError(412, message);
+    }
+
 }
 
 export default ApiError;

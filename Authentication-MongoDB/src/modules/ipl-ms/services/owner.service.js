@@ -2,6 +2,13 @@ import ApiError from '../../../common/utils/api-error.js';
 import Owner from '../models/owner.model.js';
 
 const createOwner = async ({ name, company }) => {
+
+	const already = await Owner.findOne({ name });
+
+	if (already) {
+		throw ApiError.conflict(`${already.name} already exist`);
+	}
+
 	const owner = await Owner.create({ name, company });
 	return owner;
 };

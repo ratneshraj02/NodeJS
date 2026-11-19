@@ -23,7 +23,7 @@ router.post('/logout', authenticate, controller.logout);
 
 router.get('/verify-email/:token', controller.verifyEmail);
 router.post(
-	'forgot-password',
+	'/forgot-password',
 	validate(ForgotPasswordDto),
 	controller.forgotPassword,
 );

@@ -25,14 +25,14 @@ const register = async ({ name, email, password, role }) => {
 		throw ApiError.conflict('Email already registered');
 	}
 
-	const { rawToken, hashedToken } = generateResetToken;
+	const { rawToken, hashedToken: tokenHash } = generateResetToken();
 
-	const user = User.create({
+	const user = await User.create({
 		name,
 		email,
 		password,
 		role,
-		verificationToken: hashedToken,
+		verificationToken: tokenHash,
 	});
 
 	//Don't let email failure crash registration - user already created
@@ -42,7 +42,7 @@ const register = async ({ name, email, password, role }) => {
 		console.error('Failed to send verification email:', error.message);
 	}
 
-	const userObj = { ...user };
+	const userObj = user.toObject();
 	delete userObj.password;
 	delete userObj.verificationToken;
 
@@ -88,7 +88,7 @@ const login = async ({ email, password }) => {
 // Issues a new access token using  a valid refresh token
 const refresh = async (token) => {
 	if (!token) {
-		ApiError.unauthorized('Refresh token missing');
+		throw ApiError.unauthorized('Refresh token missing');
 	}
 
 	const decoded = verifyRefreshToken(token);
@@ -116,15 +116,15 @@ const logout = async (userId) => {
 };
 
 const forgotPassword = async (email) => {
-	const user = User.findOne({ email });
+	const user = await User.findOne({ email });
 
 	if (!user) {
 		throw ApiError.notfound('No account with that email');
 	}
 
-	const { rawToken, hashedToken } = generateResetToken();
+	const { rawToken, hashedToken: tokenHash } = generateResetToken();
 
-	user.resetPasswordToken = hashedToken;
+	user.resetPasswordToken = tokenHash;
 	user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
 	await user.save({ validateBeforeSave: false });
 
@@ -139,12 +139,12 @@ const resetPassword = async (token, newPassword) => {
 	const hashToken = hashedToken(token);
 
 	const user = await User.findOne({
-		resetPasswordExpires: hashToken,
+		resetPasswordToken: hashToken,
 		resetPasswordExpires: { $gt: Date.now() },
 	}).select('+resetPasswordToken +resetPasswordExpires');
 
 	if (!user) {
-		throw ApiError('Invalid or expired reset token');
+		throw ApiError.badRequest('Invalid or expired reset token');
 	}
 
 	if (!newPassword) {
@@ -161,7 +161,7 @@ const verifyEmail = async (token) => {
 	const trimmed = String(token).trim();
 
 	if (!trimmed) {
-		throw ApiError.bedRequest('Invalid or expired verification token');
+		throw ApiError.badRequest('Invalid or expired verification token');
 	}
 
 	const hashInput = hashedToken(trimmed);
@@ -182,10 +182,13 @@ const verifyEmail = async (token) => {
 };
 
 const getMe = async (userId) => {
-	const result = imageKit.files.upload({
-		file: fs.createReadStream('public/uploads'),
-		fileName: 'file-name'.jpg,
-	});
+	const user = await User.findById(userId);
+
+	if (!user) {
+		throw ApiError.notfound('User no longer exist');
+	}
+
+	return user;
 };
 
 const avatarUpload = async (userId, file) => {

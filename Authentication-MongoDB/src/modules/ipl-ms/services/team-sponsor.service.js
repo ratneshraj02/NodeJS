@@ -4,22 +4,22 @@ import Sponsor from '../models/sponsor.model.js';
 import ApiError from '../../../common/utils/api-error.js';
 
 const createTeamSponsor = async (teamId, sponsorId) => {
-	const alreadyTeamSponsor = await TeamSponsor.findOne({ teamId, SponsorId });
+	const alreadyTeamSponsor = await TeamSponsor.findOne({ teamId, sponsorId });
 
 	if (alreadyTeamSponsor) {
 		throw ApiError.conflict('Team Sponsor already exist');
 	}
 
-	const team = await Team.findOne({ teamId });
+	const team = await Team.findById(teamId);
 	if (!team) {
 		throw ApiError.notfound('Team not found');
 	}
 
-	const sponsor = await Sponsor.findOne({ sponsorId });
+	const sponsor = await Sponsor.findById(sponsorId);
 	if (!sponsor) {
 		throw ApiError.notfound('Sponsor not found');
 	}
-	const teamSponsor = TeamSponsor.create({ teamId, sponsorId });
+	const teamSponsor = await TeamSponsor.create({ teamId, sponsorId });
 
 	return teamSponsor;
 };
@@ -27,8 +27,8 @@ const createTeamSponsor = async (teamId, sponsorId) => {
 const getAllTeamSponsor = async () => {
 	const teamSponsors = await TeamSponsor.find();
 
-	if (teamSponsors <= 0) {
-		ApiError.notfound('Team Sponsor not found');
+	if (teamSponsors.length <= 0) {
+		throw ApiError.notfound('Team Sponsor not found');
 	}
 	return teamSponsors;
 };
@@ -37,7 +37,7 @@ const getTeamSponsorById = async (teamSponsorId) => {
 	const teamSponsor = await TeamSponsor.findById(teamSponsorId);
 
 	if (!teamSponsor) {
-		ApiError.notfound('Team Sponsor not found');
+		throw ApiError.notfound('Team Sponsor not found');
 	}
 
 	return teamSponsor;
@@ -56,6 +56,10 @@ const updateTeamSponsor = async (teamSponsorId, teamId, sponsorId) => {
 		},
 	);
 
+	if (!teamSponsor) {
+		throw ApiError.notfound('Team Sponsor not found');
+	}
+
 	return teamSponsor;
 };
 
@@ -63,7 +67,7 @@ const deleteTeamSponsor = async (teamSponsorId) => {
 	const teamSponsor = await TeamSponsor.findByIdAndDelete(teamSponsorId);
 
 	if (!teamSponsor) {
-		ApiError.notfound('Team Sponsor not found');
+		throw ApiError.notfound('Team Sponsor not found');
 	}
 	return teamSponsor;
 };

@@ -104,7 +104,7 @@ const sendVerificationEmail = async (email, token) => {
 	await sendEmail(email, 'Verify you email', sendVerifyHTML(url));
 };
 
-const sendResetPasswordEmail = async (email, order) => {
+const sendResetPasswordEmail = async (email, token) => {
 	const url = `${process.env.CLIENT_URL}/reset-password/${token}`;
 	await sendEmail(email, 'Reset Your password', sendResetPasswordHTML(url));
 };

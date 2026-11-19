@@ -27,7 +27,7 @@ const createPlayer = async (name, role, teamId) => {
 const getAllPlayer = async () => {
 	const players = await Player.find();
 
-	if (player.length <= 0) {
+	if (players.length <= 0) {
 		throw ApiError.notfound('Player not found');
 	}
 
@@ -60,7 +60,7 @@ const updatePlayer = async (playerId, name, role, teamId) => {
 		},
 	);
 
-	return updatePlayer;
+	return updatedPlayer;
 };
 
 const deletePlayer = async (playerId) => {
@@ -82,7 +82,7 @@ const transferPlayer = async (playerId, newTeamId) => {
 		throw ApiError.notfound('Team not found');
 	}
 
-	const player = Player.findByIdAndUpdate(
+	const player = await Player.findByIdAndUpdate(
 		playerId,
 		{ teamId: newTeamId },
 		{
@@ -101,7 +101,7 @@ const transferPlayer = async (playerId, newTeamId) => {
 const getPlayerByTeam = async (teamId) => {
 	const players = await Player.find({ teamId });
 
-	if (players.length < 0) {
+	if (players.length <= 0) {
 		throw ApiError.notfound('Player not found');
 	}
 
@@ -118,6 +118,8 @@ const updatePlayerRole = async (playerId, role) => {
 	if (!player) {
 		throw ApiError.notfound('Player not found');
 	}
+
+	return player;
 };
 
 export {

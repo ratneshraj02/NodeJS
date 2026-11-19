@@ -16,6 +16,6 @@ const teamBroadcaster = new Schema(
 	{ timestamps: true },
 );
 
-teamSponsorSchema.index({ teamId: 1, broadcasterId: 1 }, { unique: true });
+	teamBroadcaster.index({ teamId: 1, broadcasterId: 1 }, { unique: true });
 
 export default mongoose.model('TeamBroadcaster', teamBroadcaster);

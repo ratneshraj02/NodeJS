@@ -58,4 +58,4 @@ const deleteTeam = async ({ teamId }) => {
 	return team;
 };
 
-export { createTeam, getAllTeam, getTeamById, updateTeam, updateTeam };
+export { createTeam, getAllTeam, getTeamById, updateTeam, deleteTeam };

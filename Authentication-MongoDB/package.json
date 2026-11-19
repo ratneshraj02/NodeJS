@@ -8,7 +8,8 @@
 		"dev": "nodemon server.js",
 		"start": "node server.js",
 		"db:up": "docker compose up -d",
-		"db:down": "docker compose down"
+		"db:down": "docker compose down",
+		"test": "node --test"
 	},
 	"keywords": [],
 	"author": "",

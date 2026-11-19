@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import 'dotenv/config';
 
 const generateAccessToken = (payload) => {
@@ -24,14 +25,14 @@ const verifyRefreshToken = (token) => {
 	return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 };
 
-const generateResetToken = (data) => {
-	const rowToken = crypto.randomBytes(32).toString('hex');
+const generateResetToken = () => {
+	const rawToken = crypto.randomBytes(32).toString('hex');
 	const hashedToken = crypto
 		.createHash('sha256')
 		.update(rawToken)
 		.digest('hex');
 
-	return { rowToken, hashedToken };
+	return { rawToken, hashedToken };
 };
 
 export {

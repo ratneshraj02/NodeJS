@@ -41,7 +41,7 @@ const updateOwner = async ({ ownerId, name, company }) => {
 	);
 
 	if (!owner) {
-		ApiError.notfound('Owner not found');
+		throw ApiError.notfound('Owner not found');
 	}
 
 	return owner;
@@ -51,7 +51,7 @@ const deleteOwner = async ({ ownerId }) => {
 	const owner = await Owner.findByIdAndDelete(ownerId);
 
 	if (!owner) {
-		ApiError.notfound('Owner not found');
+		throw ApiError.notfound('Owner not found');
 	}
 
 	return owner;

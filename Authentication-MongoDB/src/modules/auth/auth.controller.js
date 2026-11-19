@@ -46,18 +46,18 @@ const logout = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-	const user = authService.verifyEmail(res.params.token);
+	const user = await authService.verifyEmail(req.params.token);
 	ApiResponse.ok(res, 'Email verify successfully', user);
 };
 
 const forgotPassword = async (req, res) => {
-	await authService.forgotPassword(req.params.email);
+	await authService.forgotPassword(req.body.email);
 	ApiResponse.ok(res, 'Password reset email send');
 };
 
 const resetPassword = async (req, res) => {
-	await authService.resetPassword(req.params.token, req.body.password);
-	ApiResponse.ok(res, 'Token refreshed', { accessToken });
+	await authService.resetPassword(req.body.token, req.body.password);
+	ApiResponse.ok(res, 'Password reset successfully');
 };
 
 const getMe = async (req, res) => {
@@ -69,8 +69,7 @@ const uploadAvatar = async (req, res) => {
 	try {
 		const file = req.file;
 		if (!file) {
-			return ApiError.badRequest(
-				res,
+			throw ApiError.badRequest(
 				"No file uploaded. Please send file with field name 'avatar'",
 			);
 		}
@@ -82,7 +81,8 @@ const uploadAvatar = async (req, res) => {
 			fileId,
 		});
 	} catch (error) {
-		return ApiError.internal(res, error.message || 'Failed to upload avatar');
+		if (error.isOperation) throw error;
+		throw ApiError.internal(error.message || 'Failed to upload avatar');
 	}
 };
 

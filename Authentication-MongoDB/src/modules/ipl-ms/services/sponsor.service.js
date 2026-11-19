@@ -2,20 +2,20 @@ import Sponsor from '../models/sponsor.model.js';
 import ApiError from '../../../common/utils/api-error.js';
 
 const createSponsor = async ({ name }) => {
-	const sponsor = await Sponsor.findOne({ name });
+	const already = await Sponsor.findOne({ name });
 
-	if (sponsor) {
+	if (already) {
 		throw ApiError.conflict('Sponsor already exist');
 	}
 
-	sponsor = await Sponsor.create({ name });
+	const sponsor = await Sponsor.create({ name });
 	return sponsor;
 };
 
-const getAllSponsor = async ({}) => {
+const getAllSponsor = async () => {
 	const sponsors = await Sponsor.find();
 
-	if (sponsor.length <= 0) {
+	if (sponsors.length <= 0) {
 		throw ApiError.notfound('Sponsor not found');
 	}
 
@@ -38,6 +38,12 @@ const updateSponsor = async ({ sponsorId, name }) => {
 		{ name },
 		{ new: true, runValidators: true },
 	);
+
+	if (!sponsor) {
+		throw ApiError.notfound('Sponsor not found');
+	}
+
+	return sponsor;
 };
 
 const deleteSponsor = async ({ sponsorId }) => {

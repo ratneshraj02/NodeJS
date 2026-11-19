@@ -1,4 +1,4 @@
-import { required } from "joi";
+
 import mongoose, { Schema } from "mongoose";
 
 
@@ -15,7 +15,7 @@ const playerSchema = new Schema(
 			type: String,
 			required: [true, 'Player role is required'],
 			enum: {
-				value: ['Batsman', 'Bowler', 'All-Rounder', 'Wicker-Keeper'],
+				values: ['Batsman', 'Bowler', 'All-Rounder', 'Wicker-Keeper'],
 				message: 'Role must be : "Batsman", "Bowler", "All-Rounder", "Wicker-Keeper"',
 			},
 		},

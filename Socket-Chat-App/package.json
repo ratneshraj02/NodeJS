@@ -2,11 +2,20 @@
   "name": "socket-chat-app",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+   "dev" : "node --watch index"
   },
   "keywords": [],
-  "author": "",
+  "author": "ratnesh kumar",
   "license": "ISC",
-  "description": ""
+  "description": "A simple chat application using socket.io",
+  "dependencies": {
+    "express": "^5.3.0",
+    "socket.io": "^4.8.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.6"
+  }
 }

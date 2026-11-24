@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .chat {
+            width: 100%;
+            max-width: 480px;
+            height: 80vh;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat__header {
+            background-color: #4a90d9;
+            color: #ffffff;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .chat__messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background-color: #eeeeee;
+            align-self: flex-start;
+            word-wrap: break-word;
+        }
+
+        .message--me {
+            background-color: #4a90d9;
+            color: #ffffff;
+            align-self: flex-end;
+        }
+
+        .message__text {
+            font-size: 14px;
+        }
+
+        .message__time {
+            display: block;
+            font-size: 11px;
+            margin-top: 4px;
+            opacity: 0.7;
+            text-align: right;
+        }
+
+        .chat__typing {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: #888888;
+        }
+
+        .chat__typing[hidden] {
+            display: none;
+        }
+
+        .chat__typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #aaaaaa;
+            animation: typing-bounce 1.2s infinite ease-in-out;
+        }
+
+        .chat__typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .chat__typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .chat__typing-text {
+            margin-left: 4px;
+        }
+
+        @keyframes typing-bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+
+        .chat__form {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid #eeeeee;
+        }
+
+        .chat__input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #cccccc;
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .chat__input:focus {
+            border-color: #4a90d9;
+        }
+
+        .chat__send {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background-color: #4a90d9;
+            color: #ffffff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .chat__send:hover {
+            background-color: #357abd;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat">
+        <div class="chat__header">Socket Chat</div>
+        <div class="chat__messages" id="messages"></div>
+        <div class="chat__typing" id="typing" hidden>
+            <span class="chat__typing-dot"></span>
+            <span class="chat__typing-dot"></span>
+            <span class="chat__typing-dot"></span>
+            <span class="chat__typing-text">Someone is typing</span>
+        </div>
+        <form class="chat__form" id="form">
+            <input class="chat__input" id="input" type="text" placeholder="Type a message..." autocomplete="off" />
+            <button class="chat__send" type="submit">Send</button>
+        </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        socket.on('server:message', (data) => {
+            console.log('message from server:', data);
+
+            const text = typeof data === 'string' ? data : data?.text;
+            if (text) {
+                addMessage(text, false);
+            }
+        });
+
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+
+        // --- Message input hook -------------------------------------------------
+        // Attach your own handler(s) for submitted messages:
+        //
+        //   const off = onMessageInput((message) => {
+        //       console.log('user typed:', message);
+        //       // return false to prevent the default socket emit
+        //   });
+        //
+        //   off(); // unsubscribe again
+        // -----------------------------------------------------------------------
+        const messageInputHandlers = [];
+
+        function onMessageInput(handler) {
+            if (typeof handler !== 'function') {
+                throw new TypeError('onMessageInput: handler must be a function');
+            }
+
+            messageInputHandlers.push(handler);
+
+            return function off() {
+                const index = messageInputHandlers.indexOf(handler);
+                if (index !== -1) messageInputHandlers.splice(index, 1);
+            };
+        }
+
+        function handleMessageInput(message) {
+            const results = messageInputHandlers.map((handler) => handler(message));
+            // Default behavior (socket emit) unless a handler returns false
+            if (results.includes(false)) return false;
+            socket.emit('user:message', message);
+            return true;
+        }
+        // -----------------------------------------------------------------------
+
+        function addMessage(text, isMe) {
+            const message = document.createElement('div');
+            message.classList.add('message');
+            if (isMe) message.classList.add('message--me');
+
+            const body = document.createElement('span');
+            body.classList.add('message__text');
+            body.textContent = text;
+
+            const time = document.createElement('span');
+            time.classList.add('message__time');
+            time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            message.append(body, time);
+            messages.append(message);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, true);
+            handleMessageInput(text);
+            input.value = '';
+        });
+
+        // --- Typing indicator UI -----------------------------------------------
+        const typingIndicator = document.getElementById('typing');
+        let typingHideTimer;
+
+        socket.on('server:typing', (data) => {
+            console.log('typing event from server:', data);
+
+            typingIndicator.hidden = false;
+            clearTimeout(typingHideTimer);
+            typingHideTimer = setTimeout(() => {
+                typingIndicator.hidden = true;
+            }, 1000);
+        });
+        // -----------------------------------------------------------------------
+
+        // --- Typing event (debounced) ------------------------------------------
+        const TYPING_DEBOUNCE_MS = 300;
+        let typingTimer;
+
+        input.addEventListener('input', () => {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                socket.emit('user:typing');
+            }, TYPING_DEBOUNCE_MS);
+        });
+        // -----------------------------------------------------------------------
+    </script>
+</body>
+</html>
